@@ -73,6 +73,62 @@ Windows:
 .\mvnw.cmd spring-boot:run
 ```
 
+## Sample curl requests
+
+### UPI failure workflow — bank timeout (incident expected)
+
+```bash
+curl -X POST "http://localhost:8090/agent/upi-failure" ^
+  -H "Content-Type: application/json" ^
+  -d "{\"transactionId\":\"TXN987654\",\"bank\":\"SBI\",\"psp\":\"Google Pay\",\"transactionType\":\"P2P\",\"amount\":2500,\"status\":\"FAILED\",\"failureCode\":\"U30\",\"errorMessage\":\"Transaction timed out while waiting for response from remitter bank\"}"
+```
+
+Linux / macOS / Git Bash:
+
+```bash
+curl -X POST "http://localhost:8090/agent/upi-failure" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "transactionId": "TXN987654",
+    "bank": "SBI",
+    "psp": "Google Pay",
+    "transactionType": "P2P",
+    "amount": 2500,
+    "status": "FAILED",
+    "failureCode": "U30",
+    "errorMessage": "Transaction timed out while waiting for response from remitter bank"
+  }'
+```
+
+### UPI failure workflow — customer error (no incident)
+
+```bash
+curl -X POST "http://localhost:8090/agent/upi-failure" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "transactionId": "TXN987655",
+    "bank": "HDFC Bank",
+    "psp": "PhonePe",
+    "transactionType": "P2M",
+    "amount": 850,
+    "status": "FAILED",
+    "failureCode": "INSUFFICIENT_FUNDS",
+    "errorMessage": "Insufficient account balance"
+  }'
+```
+
+### Search UPI failure knowledge
+
+```bash
+curl "http://localhost:8090/search?query=U30%20transaction%20timeout%20remitter%20bank"
+```
+
+### Chat (optional)
+
+```bash
+curl "http://localhost:8090/chat?message=Explain%20UPI%20failure%20code%20U30"
+```
+
 ## API
 
 ### 1) UPI failure workflow (main demo)

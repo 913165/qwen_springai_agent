@@ -1,0 +1,21 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: postgres
+  ai:
+    openai:
+      base-url: http://localhost:1234/v1
+      api-key: ${LM_API_TOKEN:lm-studio}
+      chat:
+        options:
+          model: qwen/qwen3-8b
+    vectorstore:
+      pgvector:
+        initialize-schema: true
+        # HNSW/IVFFlat max out at 2000 dims; local Qwen embeddings are 4096
+        index-type: NONE
+        distance-type: COSINE_DISTANCE
+        dimensions: 4096
+        schema-validation: true
+        remove-existing-vector-store-table: true
