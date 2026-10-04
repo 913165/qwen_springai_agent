@@ -75,59 +75,80 @@ Windows:
 
 ## Sample curl requests
 
-### UPI failure workflow — bank timeout (incident expected)
+### 1) First verify RAG search matches (prints ranked hits in app console)
 
 ```bash
-curl -X POST "http://localhost:8090/agent/upi-failure" ^
-  -H "Content-Type: application/json" ^
-  -d "{\"transactionId\":\"TXN987654\",\"bank\":\"SBI\",\"psp\":\"Google Pay\",\"transactionType\":\"P2P\",\"amount\":2500,\"status\":\"FAILED\",\"failureCode\":\"U30\",\"errorMessage\":\"Transaction timed out while waiting for response from remitter bank\"}"
+curl "http://localhost:8090/search/console?query=U30"
 ```
 
-Linux / macOS / Git Bash:
+Also try exact symptom text from `input.txt`:
 
 ```bash
-curl -X POST "http://localhost:8090/agent/upi-failure" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "transactionId": "TXN987654",
-    "bank": "SBI",
-    "psp": "Google Pay",
-    "transactionType": "P2P",
-    "amount": 2500,
-    "status": "FAILED",
-    "failureCode": "U30",
-    "errorMessage": "Transaction timed out while waiting for response from remitter bank"
-  }'
+curl "http://localhost:8090/search/console?query=Transaction%20timed%20out%20while%20waiting%20for%20response%20from%20remitter%20bank"
 ```
 
-### UPI failure workflow — customer error (no incident)
+### 2) UPI failure workflow — matches `failure_code=U30` in input.txt (incident expected)
 
 ```bash
 curl -X POST "http://localhost:8090/agent/upi-failure" \
   -H "Content-Type: application/json" \
-  -d '{
-    "transactionId": "TXN987655",
-    "bank": "HDFC Bank",
-    "psp": "PhonePe",
-    "transactionType": "P2M",
-    "amount": 850,
-    "status": "FAILED",
-    "failureCode": "INSUFFICIENT_FUNDS",
-    "errorMessage": "Insufficient account balance"
-  }'
+  -d "{
+    \"transactionId\": \"TXN987654\",
+    \"bank\": \"SBI\",
+    \"psp\": \"Google Pay\",
+    \"transactionType\": \"P2P\",
+    \"amount\": 2500,
+    \"status\": \"FAILED\",
+    \"failureCode\": \"U30\",
+    \"errorMessage\": \"Transaction timed out while waiting for response from remitter bank\"
+  }"
 ```
 
-### Search UPI failure knowledge
+Postman body (raw JSON) — same payload:
+
+```json
+{
+  "transactionId": "TXN987654",
+  "bank": "SBI",
+  "psp": "Google Pay",
+  "transactionType": "P2P",
+  "amount": 2500,
+  "status": "FAILED",
+  "failureCode": "U30",
+  "errorMessage": "Transaction timed out while waiting for response from remitter bank"
+}
+```
+
+### 3) Customer error — matches `failure_code=INSUFFICIENT_FUNDS` (no incident)
 
 ```bash
-curl "http://localhost:8090/search?query=U30%20transaction%20timeout%20remitter%20bank"
+curl -X POST "http://localhost:8090/agent/upi-failure" \
+  -H "Content-Type: application/json" \
+  -d "{
+    \"transactionId\": \"TXN987655\",
+    \"bank\": \"HDFC Bank\",
+    \"psp\": \"PhonePe\",
+    \"transactionType\": \"P2M\",
+    \"amount\": 850,
+    \"status\": \"FAILED\",
+    \"failureCode\": \"INSUFFICIENT_FUNDS\",
+    \"errorMessage\": \"Insufficient account balance\"
+  }"
 ```
 
-### Chat (optional)
+### 4) Plain search (JSON only, no console dump)
+
+```bash
+curl "http://localhost:8090/search?query=U30"
+```
+
+### 5) Chat (optional)
 
 ```bash
 curl "http://localhost:8090/chat?message=Explain%20UPI%20failure%20code%20U30"
 ```
+
+> Tip: In Postman, set timeout to **0 / infinite** for `/agent/upi-failure`. Local Qwen can take >60s if thinking mode is on. This app sends `enable_thinking=false` to LM Studio.
 
 ## API
 

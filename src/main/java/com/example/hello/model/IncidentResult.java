@@ -1,7 +1,7 @@
 package com.example.hello.model;
 
 /**
- * Structured output from Agent 2 — Incident Creation / skip decision.
+ * Result of the createIncident tool / skip decision (Agent 2).
  */
 public record IncidentResult(
 		boolean incidentCreated,
@@ -9,13 +9,6 @@ public record IncidentResult(
 		String status,
 		String category,
 		String severity,
-		String transactionId,
-		String failureCode,
-		String failureType,
-		String rootCause,
-		String incidentInformation,
-		String investigationSteps,
-		String escalationTeam,
 		String reason
 ) {
 }

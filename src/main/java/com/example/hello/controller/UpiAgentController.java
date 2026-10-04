@@ -1,5 +1,7 @@
 package com.example.hello.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,6 +20,8 @@ import com.example.hello.service.UpiFailureWorkflow;
 @RequestMapping("/agent")
 public class UpiAgentController {
 
+	private static final Logger logger = LoggerFactory.getLogger(UpiAgentController.class);
+
 	private final UpiFailureWorkflow workflow;
 
 	public UpiAgentController(UpiFailureWorkflow workflow) {
@@ -32,6 +36,23 @@ public class UpiAgentController {
 	 */
 	@PostMapping(path = "/upi-failure", consumes = MediaType.APPLICATION_JSON_VALUE)
 	public WorkflowResponse handleUpiFailure(@RequestBody TransactionFailureRequest transaction) {
-		return workflow.process(transaction);
+		long start = System.currentTimeMillis();
+		System.out.println("========== [/agent/upi-failure] REQUEST RECEIVED ==========");
+		System.out.println("transactionId=" + transaction.transactionId()
+				+ ", failureCode=" + transaction.failureCode()
+				+ ", bank=" + transaction.bank());
+		logger.info("POST /agent/upi-failure received txnId={} failureCode={}",
+				transaction.transactionId(), transaction.failureCode());
+
+		WorkflowResponse response = workflow.process(transaction);
+
+		long elapsed = System.currentTimeMillis() - start;
+		System.out.println("========== [/agent/upi-failure] RESPONSE READY in " + elapsed + " ms ==========");
+		System.out.println("incidentCreated="
+				+ (response.incident() != null && response.incident().incidentCreated())
+				+ ", incidentId="
+				+ (response.incident() != null ? response.incident().incidentId() : null));
+		logger.info("POST /agent/upi-failure completed in {} ms", elapsed);
+		return response;
 	}
 }

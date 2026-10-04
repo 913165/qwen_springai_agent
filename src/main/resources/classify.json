@@ -1,0 +1,687 @@
+{
+  "version": "1.0",
+  "description": "UPI failure classification catalog. Agents must classify using these entries only.",
+  "classifications": [
+    {
+      "failureCode": "U30",
+      "failureType": "TRANSIENT_BANK_TIMEOUT",
+      "severity": "HIGH",
+      "rootCause": "Remitter bank did not respond within configured timeout",
+      "recommendedAction": "Retry after verifying bank availability. If failures increase, create a bank incident.",
+      "incidentRequired": true,
+      "incidentCategory": "BANK_SERVICE_DEGRADATION",
+      "matchHints": [
+        "U30",
+        "Transaction timed out while waiting for response from remitter bank",
+        "TRANSIENT_BANK_TIMEOUT"
+      ]
+    },
+    {
+      "failureCode": "INSUFFICIENT_FUNDS",
+      "failureType": "CUSTOMER_ERROR",
+      "severity": "LOW",
+      "rootCause": "Customer does not have sufficient available balance",
+      "recommendedAction": "Do not retry automatically. Customer should add funds or use another payment method.",
+      "incidentRequired": false,
+      "incidentCategory": "CUSTOMER_ACTION",
+      "matchHints": [
+        "INSUFFICIENT_FUNDS",
+        "Insufficient account balance",
+        "CUSTOMER_ERROR"
+      ]
+    },
+    {
+      "failureCode": "U16",
+      "failureType": "FRAUD_RISK",
+      "severity": "HIGH",
+      "rootCause": "Fraud risk engine rejected the transaction",
+      "recommendedAction": "Do not retry automatically. Review customer and transaction risk indicators.",
+      "incidentRequired": true,
+      "incidentCategory": "RISK_ENGINE_REJECTION",
+      "matchHints": [
+        "U16",
+        "Transaction rejected because risk threshold was exceeded",
+        "FRAUD_RISK"
+      ]
+    },
+    {
+      "failureCode": "BANK_SERVER_DOWN",
+      "failureType": "BANK_SERVICE_OUTAGE",
+      "severity": "CRITICAL",
+      "rootCause": "Axis Bank UPI backend service is unavailable",
+      "recommendedAction": "Avoid repeated retries. Check bank service health and create incident if failures are widespread.",
+      "incidentRequired": true,
+      "incidentCategory": "BANK_OUTAGE",
+      "matchHints": [
+        "BANK_SERVER_DOWN",
+        "Issuer bank UPI service is unavailable",
+        "BANK_SERVICE_OUTAGE"
+      ]
+    },
+    {
+      "failureCode": "INVALID_VPA",
+      "failureType": "BENEFICIARY_ERROR",
+      "severity": "LOW",
+      "rootCause": "Beneficiary VPA could not be resolved",
+      "recommendedAction": "Do not retry automatically. Ask customer to verify beneficiary UPI ID.",
+      "incidentRequired": false,
+      "incidentCategory": "INVALID_BENEFICIARY",
+      "matchHints": [
+        "INVALID_VPA",
+        "Beneficiary UPI ID is invalid",
+        "BENEFICIARY_ERROR"
+      ]
+    },
+    {
+      "failureCode": "TIMEOUT",
+      "failureType": "TRANSACTION_PENDING",
+      "severity": "HIGH",
+      "rootCause": "Issuer bank processing exceeded expected response time",
+      "recommendedAction": "Query transaction status before initiating another payment.",
+      "incidentRequired": true,
+      "incidentCategory": "TRANSACTION_DELAY",
+      "matchHints": [
+        "TIMEOUT",
+        "No final response received from issuer bank",
+        "TRANSACTION_PENDING"
+      ]
+    },
+    {
+      "failureCode": "DUPLICATE_TRANSACTION",
+      "failureType": "DUPLICATE_REQUEST",
+      "severity": "MEDIUM",
+      "rootCause": "Same transaction reference was submitted more than once",
+      "recommendedAction": "Do not retry. Verify status of original transaction.",
+      "incidentRequired": false,
+      "incidentCategory": "DUPLICATE_TRANSACTION",
+      "matchHints": [
+        "DUPLICATE_TRANSACTION",
+        "Duplicate transaction detected",
+        "DUPLICATE_REQUEST"
+      ]
+    },
+    {
+      "failureCode": "SERVICE_UNAVAILABLE",
+      "failureType": "BANK_SERVICE_DEGRADATION",
+      "severity": "CRITICAL",
+      "rootCause": "Bank UPI service is unavailable or severely degraded",
+      "recommendedAction": "Create operational incident and monitor failure rate. Avoid aggressive retries.",
+      "incidentRequired": true,
+      "incidentCategory": "BANK_UPI_DEGRADATION",
+      "matchHints": [
+        "SERVICE_UNAVAILABLE",
+        "UPI service temporarily unavailable",
+        "BANK_SERVICE_DEGRADATION"
+      ]
+    },
+    {
+      "failureCode": "INVALID_PIN",
+      "failureType": "CUSTOMER_AUTHENTICATION_ERROR",
+      "severity": "LOW",
+      "rootCause": "Customer entered incorrect UPI PIN",
+      "recommendedAction": "Do not retry automatically. Customer should enter correct PIN or reset it.",
+      "incidentRequired": false,
+      "incidentCategory": "CUSTOMER_AUTHENTICATION",
+      "matchHints": [
+        "INVALID_PIN",
+        "Incorrect UPI PIN",
+        "CUSTOMER_AUTHENTICATION_ERROR"
+      ]
+    },
+    {
+      "failureCode": "CONNECTION_POOL_EXHAUSTED",
+      "failureType": "INTERNAL_TECHNICAL_FAILURE",
+      "severity": "CRITICAL",
+      "rootCause": "Bank connector connection pool is exhausted",
+      "recommendedAction": "Create technical incident and investigate pool utilization, connection leaks and downstream latency.",
+      "incidentRequired": true,
+      "incidentCategory": "APPLICATION_INFRASTRUCTURE",
+      "matchHints": [
+        "CONNECTION_POOL_EXHAUSTED",
+        "Unable to acquire connection from bank connection pool",
+        "INTERNAL_TECHNICAL_FAILURE"
+      ]
+    },
+    {
+      "failureCode": "U09",
+      "failureType": "BANK_DECLINE",
+      "severity": "MEDIUM",
+      "rootCause": "Issuer bank rejected transaction based on account or transaction restrictions",
+      "recommendedAction": "Verify account restrictions. Do not repeatedly retry.",
+      "incidentRequired": false,
+      "incidentCategory": "BANK_DECLINE",
+      "matchHints": [
+        "U09",
+        "Transaction not permitted by issuer bank",
+        "BANK_DECLINE"
+      ]
+    },
+    {
+      "failureCode": "DAILY_LIMIT_EXCEEDED",
+      "failureType": "CUSTOMER_LIMIT",
+      "severity": "MEDIUM",
+      "rootCause": "Customer reached configured daily transaction limit",
+      "recommendedAction": "Do not retry. Customer should retry after limit reset or use another payment method.",
+      "incidentRequired": false,
+      "incidentCategory": "TRANSACTION_LIMIT",
+      "matchHints": [
+        "DAILY_LIMIT_EXCEEDED",
+        "Daily UPI transaction limit exceeded",
+        "CUSTOMER_LIMIT"
+      ]
+    },
+    {
+      "failureCode": "U28",
+      "failureType": "BENEFICIARY_BANK_DECLINE",
+      "severity": "MEDIUM",
+      "rootCause": "Beneficiary bank rejected credit request",
+      "recommendedAction": "Retry later after verifying beneficiary bank availability.",
+      "incidentRequired": true,
+      "incidentCategory": "BENEFICIARY_BANK_FAILURE",
+      "matchHints": [
+        "U28",
+        "Beneficiary bank declined transaction",
+        "BENEFICIARY_BANK_DECLINE"
+      ]
+    },
+    {
+      "failureCode": "ACCOUNT_BLOCKED",
+      "failureType": "ACCOUNT_RESTRICTION",
+      "severity": "HIGH",
+      "rootCause": "Customer account has a UPI debit restriction",
+      "recommendedAction": "Do not retry. Customer must contact bank to remove restriction.",
+      "incidentRequired": false,
+      "incidentCategory": "ACCOUNT_RESTRICTION",
+      "matchHints": [
+        "ACCOUNT_BLOCKED",
+        "Debit account is blocked for UPI transactions",
+        "ACCOUNT_RESTRICTION"
+      ]
+    },
+    {
+      "failureCode": "NPCI_TIMEOUT",
+      "failureType": "NPCI_CONNECTIVITY",
+      "severity": "CRITICAL",
+      "rootCause": "UPI transaction did not receive timely response from NPCI network",
+      "recommendedAction": "Check NPCI connectivity and monitor transaction failure rate before retrying.",
+      "incidentRequired": true,
+      "incidentCategory": "NPCI_NETWORK",
+      "matchHints": [
+        "NPCI_TIMEOUT",
+        "NPCI response timeout exceeded configured threshold",
+        "NPCI_CONNECTIVITY"
+      ]
+    },
+    {
+      "failureCode": "DEVICE_BINDING_FAILED",
+      "failureType": "DEVICE_SECURITY",
+      "severity": "HIGH",
+      "rootCause": "Registered device validation failed",
+      "recommendedAction": "Re-register the device with PSP application. Do not retry automatically.",
+      "incidentRequired": false,
+      "incidentCategory": "DEVICE_VALIDATION",
+      "matchHints": [
+        "DEVICE_BINDING_FAILED",
+        "Device binding validation failed",
+        "DEVICE_SECURITY"
+      ]
+    },
+    {
+      "failureCode": "COLLECT_REQUEST_EXPIRED",
+      "failureType": "REQUEST_EXPIRY",
+      "severity": "LOW",
+      "rootCause": "Customer did not authorize collect request within allowed period",
+      "recommendedAction": "Generate a new collect request.",
+      "incidentRequired": false,
+      "incidentCategory": "COLLECT_REQUEST",
+      "matchHints": [
+        "COLLECT_REQUEST_EXPIRED",
+        "Collect request expired before authorization",
+        "REQUEST_EXPIRY"
+      ]
+    },
+    {
+      "failureCode": "VPA_DISABLED",
+      "failureType": "BENEFICIARY_ERROR",
+      "severity": "MEDIUM",
+      "rootCause": "Beneficiary UPI ID is currently disabled",
+      "recommendedAction": "Ask beneficiary to verify UPI account status.",
+      "incidentRequired": false,
+      "incidentCategory": "BENEFICIARY_VPA",
+      "matchHints": [
+        "VPA_DISABLED",
+        "Beneficiary VPA is disabled",
+        "BENEFICIARY_ERROR"
+      ]
+    },
+    {
+      "failureCode": "TRANSACTION_LIMIT_EXCEEDED",
+      "failureType": "LIMIT_ERROR",
+      "severity": "MEDIUM",
+      "rootCause": "Requested transaction exceeds configured amount limit",
+      "recommendedAction": "Reduce transaction amount or use another payment method.",
+      "incidentRequired": false,
+      "incidentCategory": "TRANSACTION_LIMIT",
+      "matchHints": [
+        "TRANSACTION_LIMIT_EXCEEDED",
+        "Transaction amount exceeds permitted UPI limit",
+        "LIMIT_ERROR"
+      ]
+    },
+    {
+      "failureCode": "NETWORK_ERROR",
+      "failureType": "PSP_CONNECTIVITY",
+      "severity": "HIGH",
+      "rootCause": "PSP lost network connectivity while processing transaction",
+      "recommendedAction": "Check PSP network health and retry only after transaction status is confirmed.",
+      "incidentRequired": true,
+      "incidentCategory": "PSP_NETWORK",
+      "matchHints": [
+        "NETWORK_ERROR",
+        "Network connection lost during transaction processing",
+        "PSP_CONNECTIVITY"
+      ]
+    },
+    {
+      "failureCode": "ACCOUNT_NOT_FOUND",
+      "failureType": "ACCOUNT_MAPPING_ERROR",
+      "severity": "HIGH",
+      "rootCause": "UPI profile is mapped to an unavailable bank account",
+      "recommendedAction": "Ask customer to re-link the bank account.",
+      "incidentRequired": false,
+      "incidentCategory": "ACCOUNT_MAPPING",
+      "matchHints": [
+        "ACCOUNT_NOT_FOUND",
+        "Mapped bank account could not be located",
+        "ACCOUNT_MAPPING_ERROR"
+      ]
+    },
+    {
+      "failureCode": "BENEFICIARY_ACCOUNT_BLOCKED",
+      "failureType": "BENEFICIARY_RESTRICTION",
+      "severity": "HIGH",
+      "rootCause": "Beneficiary account cannot receive UPI credits",
+      "recommendedAction": "Beneficiary should contact their bank.",
+      "incidentRequired": false,
+      "incidentCategory": "BENEFICIARY_ACCOUNT",
+      "matchHints": [
+        "BENEFICIARY_ACCOUNT_BLOCKED",
+        "Beneficiary bank account is blocked",
+        "BENEFICIARY_RESTRICTION"
+      ]
+    },
+    {
+      "failureCode": "SESSION_EXPIRED",
+      "failureType": "PSP_SESSION_ERROR",
+      "severity": "LOW",
+      "rootCause": "Payment session exceeded configured lifetime",
+      "recommendedAction": "Restart payment flow and retry after confirming transaction status.",
+      "incidentRequired": false,
+      "incidentCategory": "PSP_SESSION",
+      "matchHints": [
+        "SESSION_EXPIRED",
+        "UPI payment session expired",
+        "PSP_SESSION_ERROR"
+      ]
+    },
+    {
+      "failureCode": "RISK_DECLINED",
+      "failureType": "FRAUD_RISK",
+      "severity": "HIGH",
+      "rootCause": "Transaction matched configured fraud prevention rule",
+      "recommendedAction": "Do not retry automatically. Review risk indicators.",
+      "incidentRequired": true,
+      "incidentCategory": "FRAUD_DETECTION",
+      "matchHints": [
+        "RISK_DECLINED",
+        "Transaction declined by fraud detection rules",
+        "FRAUD_RISK"
+      ]
+    },
+    {
+      "failureCode": "MANDATE_NOT_FOUND",
+      "failureType": "MANDATE_ERROR",
+      "severity": "MEDIUM",
+      "rootCause": "Referenced UPI mandate does not exist or is no longer active",
+      "recommendedAction": "Verify mandate registration and create a new mandate if required.",
+      "incidentRequired": false,
+      "incidentCategory": "MANDATE",
+      "matchHints": [
+        "MANDATE_NOT_FOUND",
+        "UPI mandate reference not found",
+        "MANDATE_ERROR"
+      ]
+    },
+    {
+      "failureCode": "OTP_VALIDATION_FAILED",
+      "failureType": "AUTHENTICATION_ERROR",
+      "severity": "MEDIUM",
+      "rootCause": "Additional authentication validation failed",
+      "recommendedAction": "Restart authentication flow and retry only after successful authentication.",
+      "incidentRequired": false,
+      "incidentCategory": "AUTHENTICATION",
+      "matchHints": [
+        "OTP_VALIDATION_FAILED",
+        "Authentication validation failed",
+        "AUTHENTICATION_ERROR"
+      ]
+    },
+    {
+      "failureCode": "DEBIT_FAILED",
+      "failureType": "BANK_DEBIT_FAILURE",
+      "severity": "HIGH",
+      "rootCause": "Issuer bank debit operation failed",
+      "recommendedAction": "Check bank account and transaction state before retry.",
+      "incidentRequired": true,
+      "incidentCategory": "BANK_DEBIT_FAILURE",
+      "matchHints": [
+        "DEBIT_FAILED",
+        "Bank was unable to debit customer account",
+        "BANK_DEBIT_FAILURE"
+      ]
+    },
+    {
+      "failureCode": "CREDIT_FAILED",
+      "failureType": "BENEFICIARY_CREDIT_FAILURE",
+      "severity": "HIGH",
+      "rootCause": "Beneficiary bank failed to complete credit operation",
+      "recommendedAction": "Verify beneficiary account and bank response. Investigate if failures are repeated.",
+      "incidentRequired": true,
+      "incidentCategory": "CREDIT_FAILURE",
+      "matchHints": [
+        "CREDIT_FAILED",
+        "Beneficiary account could not be credited",
+        "BENEFICIARY_CREDIT_FAILURE"
+      ]
+    },
+    {
+      "failureCode": "FREQUENCY_LIMIT",
+      "failureType": "TRANSACTION_FREQUENCY_LIMIT",
+      "severity": "MEDIUM",
+      "rootCause": "Configured transaction frequency threshold exceeded",
+      "recommendedAction": "Wait before initiating another transaction.",
+      "incidentRequired": false,
+      "incidentCategory": "LIMIT_CONTROL",
+      "matchHints": [
+        "FREQUENCY_LIMIT",
+        "Transaction frequency limit exceeded",
+        "TRANSACTION_FREQUENCY_LIMIT"
+      ]
+    },
+    {
+      "failureCode": "QR_EXPIRED",
+      "failureType": "MERCHANT_QR_ERROR",
+      "severity": "LOW",
+      "rootCause": "Merchant dynamic QR exceeded its validity period",
+      "recommendedAction": "Generate a new merchant QR code.",
+      "incidentRequired": false,
+      "incidentCategory": "MERCHANT_QR",
+      "matchHints": [
+        "QR_EXPIRED",
+        "Dynamic QR code has expired",
+        "MERCHANT_QR_ERROR"
+      ]
+    },
+    {
+      "failureCode": "QR_INVALID",
+      "failureType": "QR_VALIDATION_ERROR",
+      "severity": "LOW",
+      "rootCause": "QR payload failed validation",
+      "recommendedAction": "Scan a valid merchant QR code.",
+      "incidentRequired": false,
+      "incidentCategory": "QR_VALIDATION",
+      "matchHints": [
+        "QR_INVALID",
+        "Invalid UPI QR payload",
+        "QR_VALIDATION_ERROR"
+      ]
+    },
+    {
+      "failureCode": "API_ERROR_500",
+      "failureType": "BANK_INTERNAL_ERROR",
+      "severity": "CRITICAL",
+      "rootCause": "Bank API encountered an internal server error",
+      "recommendedAction": "Create incident if errors persist and monitor bank API health.",
+      "incidentRequired": true,
+      "incidentCategory": "BANK_API_FAILURE",
+      "matchHints": [
+        "API_ERROR_500",
+        "Internal server error returned by bank API",
+        "BANK_INTERNAL_ERROR"
+      ]
+    },
+    {
+      "failureCode": "RATE_LIMITED",
+      "failureType": "API_RATE_LIMIT",
+      "severity": "HIGH",
+      "rootCause": "API gateway rate limit was exceeded",
+      "recommendedAction": "Apply exponential backoff and investigate request volume.",
+      "incidentRequired": true,
+      "incidentCategory": "API_RATE_LIMIT",
+      "matchHints": [
+        "RATE_LIMITED",
+        "Too many requests received",
+        "API_RATE_LIMIT"
+      ]
+    },
+    {
+      "failureCode": "BANK_MAINTENANCE",
+      "failureType": "SCHEDULED_OUTAGE",
+      "severity": "CRITICAL",
+      "rootCause": "Bank has temporarily disabled UPI services for maintenance",
+      "recommendedAction": "Do not retry during maintenance. Create or update maintenance incident and monitor recovery.",
+      "incidentRequired": true,
+      "incidentCategory": "BANK_MAINTENANCE",
+      "matchHints": [
+        "BANK_MAINTENANCE",
+        "Bank UPI services are under scheduled maintenance",
+        "SCHEDULED_OUTAGE"
+      ]
+    },
+    {
+      "failureCode": "BENEFICIARY_NAME_MISMATCH",
+      "failureType": "BENEFICIARY_VALIDATION",
+      "severity": "MEDIUM",
+      "rootCause": "Beneficiary account validation returned inconsistent name information",
+      "recommendedAction": "Verify beneficiary account details before retrying.",
+      "incidentRequired": false,
+      "incidentCategory": "BENEFICIARY_VALIDATION",
+      "matchHints": [
+        "BENEFICIARY_NAME_MISMATCH",
+        "Beneficiary validation failed due to account name mismatch",
+        "BENEFICIARY_VALIDATION"
+      ]
+    },
+    {
+      "failureCode": "REFUND_PENDING",
+      "failureType": "REFUND_DELAY",
+      "severity": "MEDIUM",
+      "rootCause": "Failed transaction has not yet completed refund processing",
+      "recommendedAction": "Do not retry immediately. Track refund status and reconcile original transaction.",
+      "incidentRequired": true,
+      "incidentCategory": "REFUND_PROCESSING",
+      "matchHints": [
+        "REFUND_PENDING",
+        "Original transaction failed but refund processing is pending",
+        "REFUND_DELAY"
+      ]
+    },
+    {
+      "failureCode": "MOBILE_NOT_REGISTERED",
+      "failureType": "CUSTOMER_PROFILE_ERROR",
+      "severity": "HIGH",
+      "rootCause": "Customer mobile number is not linked to bank account",
+      "recommendedAction": "Customer must register mobile number with bank.",
+      "incidentRequired": false,
+      "incidentCategory": "CUSTOMER_PROFILE",
+      "matchHints": [
+        "MOBILE_NOT_REGISTERED",
+        "Mobile number is not registered with bank account",
+        "CUSTOMER_PROFILE_ERROR"
+      ]
+    },
+    {
+      "failureCode": "MERCHANT_NOT_FOUND",
+      "failureType": "MERCHANT_DIRECTORY_ERROR",
+      "severity": "LOW",
+      "rootCause": "Merchant VPA was not found in UPI directory",
+      "recommendedAction": "Verify merchant UPI ID or regenerate merchant QR.",
+      "incidentRequired": false,
+      "incidentCategory": "MERCHANT_DIRECTORY",
+      "matchHints": [
+        "MERCHANT_NOT_FOUND",
+        "Merchant VPA could not be resolved",
+        "MERCHANT_DIRECTORY_ERROR"
+      ]
+    },
+    {
+      "failureCode": "CERTIFICATE_ERROR",
+      "failureType": "BANK_CONNECTIVITY",
+      "severity": "CRITICAL",
+      "rootCause": "Bank connector could not establish trusted TLS connection",
+      "recommendedAction": "Create technical incident and verify certificate expiry, trust store and certificate chain.",
+      "incidentRequired": true,
+      "incidentCategory": "SECURITY_CONNECTIVITY",
+      "matchHints": [
+        "CERTIFICATE_ERROR",
+        "TLS certificate validation failed while connecting to bank",
+        "BANK_CONNECTIVITY"
+      ]
+    },
+    {
+      "failureCode": "REQUEST_MALFORMED",
+      "failureType": "API_REQUEST_ERROR",
+      "severity": "HIGH",
+      "rootCause": "Request payload failed API schema validation",
+      "recommendedAction": "Inspect request payload and validate against UPI API schema.",
+      "incidentRequired": true,
+      "incidentCategory": "APPLICATION_API_ERROR",
+      "matchHints": [
+        "REQUEST_MALFORMED",
+        "Invalid transaction request payload",
+        "API_REQUEST_ERROR"
+      ]
+    },
+    {
+      "failureCode": "TRANSACTION_REVERSED",
+      "failureType": "TRANSACTION_REVERSAL",
+      "severity": "HIGH",
+      "rootCause": "Issuer bank reversed transaction after initial debit processing",
+      "recommendedAction": "Do not retry until reversal and account balance are reconciled.",
+      "incidentRequired": true,
+      "incidentCategory": "TRANSACTION_RECONCILIATION",
+      "matchHints": [
+        "TRANSACTION_REVERSED",
+        "Transaction reversed by issuer bank after debit attempt",
+        "TRANSACTION_REVERSAL"
+      ]
+    },
+    {
+      "failureCode": "APP_VERSION_UNSUPPORTED",
+      "failureType": "PSP_CLIENT_ERROR",
+      "severity": "MEDIUM",
+      "rootCause": "Customer is using unsupported PSP application version",
+      "recommendedAction": "Ask customer to update PSP application.",
+      "incidentRequired": false,
+      "incidentCategory": "PSP_VERSION",
+      "matchHints": [
+        "APP_VERSION_UNSUPPORTED",
+        "PSP application version does not support this transaction",
+        "PSP_CLIENT_ERROR"
+      ]
+    },
+    {
+      "failureCode": "BANK_RESPONSE_INVALID",
+      "failureType": "BANK_API_PROTOCOL_ERROR",
+      "severity": "CRITICAL",
+      "rootCause": "Bank returned response that does not match expected API schema",
+      "recommendedAction": "Create technical incident and inspect bank response payload and connector parser.",
+      "incidentRequired": true,
+      "incidentCategory": "BANK_API_PROTOCOL",
+      "matchHints": [
+        "BANK_RESPONSE_INVALID",
+        "Received invalid response format from issuer bank",
+        "BANK_API_PROTOCOL_ERROR"
+      ]
+    },
+    {
+      "failureCode": "ACCOUNT_DORMANT",
+      "failureType": "ACCOUNT_STATUS_ERROR",
+      "severity": "HIGH",
+      "rootCause": "Customer account is marked dormant by bank",
+      "recommendedAction": "Customer must reactivate account through bank.",
+      "incidentRequired": false,
+      "incidentCategory": "ACCOUNT_STATUS",
+      "matchHints": [
+        "ACCOUNT_DORMANT",
+        "Debit account is dormant",
+        "ACCOUNT_STATUS_ERROR"
+      ]
+    },
+    {
+      "failureCode": "DATABASE_TIMEOUT",
+      "failureType": "DATABASE_PERFORMANCE",
+      "severity": "CRITICAL",
+      "rootCause": "Transaction database experienced excessive query latency",
+      "recommendedAction": "Create technical incident and investigate database latency, locks and slow queries.",
+      "incidentRequired": true,
+      "incidentCategory": "DATABASE_PERFORMANCE",
+      "matchHints": [
+        "DATABASE_TIMEOUT",
+        "Database query timed out while retrieving transaction state",
+        "DATABASE_PERFORMANCE"
+      ]
+    },
+    {
+      "failureCode": "MERCHANT_LIMIT_EXCEEDED",
+      "failureType": "MERCHANT_LIMIT",
+      "severity": "MEDIUM",
+      "rootCause": "Merchant exceeded configured daily UPI transaction limit",
+      "recommendedAction": "Merchant should contact PSP to review or increase transaction limit.",
+      "incidentRequired": false,
+      "incidentCategory": "MERCHANT_LIMIT",
+      "matchHints": [
+        "MERCHANT_LIMIT_EXCEEDED",
+        "Merchant daily transaction limit exceeded",
+        "MERCHANT_LIMIT"
+      ]
+    },
+    {
+      "failureCode": "SERVICE_TIMEOUT",
+      "failureType": "DOWNSTREAM_TIMEOUT",
+      "severity": "HIGH",
+      "rootCause": "Downstream bank service responded slower than configured timeout",
+      "recommendedAction": "Investigate downstream bank latency and use controlled retry with exponential backoff.",
+      "incidentRequired": true,
+      "incidentCategory": "DOWNSTREAM_LATENCY",
+      "matchHints": [
+        "SERVICE_TIMEOUT",
+        "Transaction processing exceeded configured 30 second timeout",
+        "DOWNSTREAM_TIMEOUT"
+      ]
+    },
+    {
+      "failureCode": "UNKNOWN_ERROR",
+      "failureType": "UNCLASSIFIED_TECHNICAL_ERROR",
+      "severity": "HIGH",
+      "rootCause": "Transaction failed due to an unclassified technical exception",
+      "recommendedAction": "Create investigation incident and correlate transaction ID with application, bank and NPCI logs.",
+      "incidentRequired": true,
+      "incidentCategory": "UNKNOWN_TECHNICAL_FAILURE",
+      "matchHints": [
+        "UNKNOWN_ERROR",
+        "Unexpected error occurred during UPI transaction processing",
+        "UNCLASSIFIED_TECHNICAL_ERROR"
+      ]
+    }
+  ],
+  "fallback": {
+    "failureCode": "OTHER",
+    "failureType": "UNCLASSIFIED",
+    "severity": "HIGH",
+    "rootCause": "No matching classification found in classify.json",
+    "recommendedAction": "Create incident for manual investigation",
+    "incidentRequired": true,
+    "incidentCategory": "UNCLASSIFIED_FAILURE"
+  }
+}
